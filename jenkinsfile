@@ -1,18 +1,22 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Create Manifest') {
-            steps {
-                script {
-                    def manifestContent = '''
-                        Name: Sample Application
-                        Version: 1.0.0
-                        Description: This is a sample manifest file created by Jenkins Pipeline
-                        Author: Your Name
-                    '''
-                    writeFile file: 'manifest.txt', text: manifestContent.trim()
-                }
+    stage('Update Deployment File') {
+        environment {
+            GIT_REPO_NAME = "SpringDemo"
+            GIT_USER_NAME = "david-damo"
+        }
+        steps {
+            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                sh '''
+                    git config user.email "sanjeev_jha77@rediffmail.com"
+                    git config user.name "david-damo"
+                    BUILD_NUMBER=1
+                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" Manifest/deployment.yml
+                    git add Manifest/deployment.yml
+                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                '''
             }
         }
     }
