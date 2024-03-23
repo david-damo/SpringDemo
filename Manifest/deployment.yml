@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: demo-springboot-first-app
-        image: sanjeevjha77/cicd-demo-sanjeev:1
+        image: sanjeevjha77/cicd-demo-sanjeev:replaceImageTag
         ports:
         - containerPort: 8080
